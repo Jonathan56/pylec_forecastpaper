@@ -90,7 +90,7 @@ def value_metrics(df, cons, prod, storage):
     assert int(pandas.infer_freq(df.index)[:-1]) == 15
 
     # With batteries
-    _df = allocation.merge_storage(df, cons, prod, storage)
+    _df = merge_storage(df, cons, prod, storage)
     metrics = self_consumption_production(_df, cons, prod)
 
     # Without batteries

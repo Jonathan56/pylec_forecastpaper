@@ -1,5 +1,5 @@
 import pandas
-from datetime import datetime
+from datetime import datetime, timedelta
 from fppylec import metric, forecast, optimization, validate
 
 def main(df, start, end, pv_capacity, battery_kWh, battery_kW,
@@ -13,6 +13,7 @@ def main(df, start, end, pv_capacity, battery_kWh, battery_kW,
 
     # Result frame (add training data or "real data")
     start_timer = datetime.now()
+    one_day = timedelta(hours=23, minutes=45)
     result = df.loc[start-f_train_period:start-timedelta(minutes=15)].copy()
     result['r_houses_kW'] = result['vo_houses_kW']
     result['r_pv_kW'] = result['vo_pv_coef'] * pv_capacity
@@ -29,10 +30,10 @@ def main(df, start, end, pv_capacity, battery_kWh, battery_kW,
         # DFALGO
         # Forecasts (PV and consumption)
         dfalgo['f_pv_kW'] = dfalgo['vo_pv_coef'] * pv_capacity
-        if f_method == 'perfect':
+        if f_method == forecast.perfect:
             dfalgo['f_houses_kW'] = dfalgo['vo_houses_kW']
         else:
-            dfalgo['f_houses_kW'] = forecast_func(
+            dfalgo['f_houses_kW'] = f_method(
                 training['r_houses_kW'], f_horizon, **f_kwarg)
 
         # Control signal

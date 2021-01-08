@@ -20,6 +20,9 @@ from sklearn.ensemble import GradientBoostingRegressor
 import keras
 import tensorflow as tf
 
+def perfect(training, horizon):
+    return 'Not implemented'
+
 def ma(training, horizon):
     """Moving average forecast"""
     # Start of the forecast 15 min after last training data point

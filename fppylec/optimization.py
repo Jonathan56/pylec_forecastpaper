@@ -201,16 +201,8 @@ def maximize_self_consumption_vforecast(
     #################################################### Run
     # Solve optimization problem
     with SolverFactory(solver, executable=solver_path) as opt:
-        if solver in 'glpk':
-            opt.options['tmlim'] = timelimit
-            results = opt.solve(m, tee=verbose)
-        if solver in 'gurobi':
-            opt.options['TimeLimit'] = timelimit
-            results = opt.solve(m, tee=verbose)
-        if solver in 'cbc':
-            results = opt.solve(m, timelimit=timelimit, tee=verbose)
-        else:
-            raise NotImplementedError
+        opt.options['tmlim'] = timelimit
+        results = opt.solve(m, tee=verbose)
     if verbose:
         print(results)
 
