@@ -1,0 +1,13 @@
+.DS_Store
+*.ipynb_checkpoints
+*__pycache__/
+results/*.obj
+*pylec.egg-info
+pylec/database/community_sizes/*.csv
+*.pytest_cache/
+studies/data/*
+!studies/data/173_20_0.pickle
+!studies/data/100_20_0.pickle
+!studies/data/Making data packet for pylec.ipynb
+!studies/data/17_UK.pickle
+.env

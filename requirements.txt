@@ -1,0 +1,16 @@
+plotly
+cufflinks
+pyomo
+pyts
+numba
+statsmodels
+pmdarima
+fbprophet
+seaborn
+papermill
+nbformat
+tensorflow
+keras
+tqdm
+pytest
+pandas
