@@ -4,7 +4,7 @@ function run {
   $SSH git -C ./pylec_forecast_paper pull origin master
 
   # Run simulation <-- CHANGE NAME
-  $SSH docker run -t -d --rm --name $1 --mount type=bind,source=/home/jon/pylec_forecast_paper,target=/usr/src/app python_box_jon $1 $2 $EMAIL
+  $SSH docker run -t -d --rm --name $1 --mount type=bind,source=/home/jon/fppylec,target=/usr/src/app python_box_jon $1 $2 $EMAIL
 }
 
 function getall {
