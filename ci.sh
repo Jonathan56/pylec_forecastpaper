@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 function run {
   # Update pylec <-- CHANGE NAME
-  $SSH git -C ./pylec_forecast_paper pull origin master
+  $SSH git -C ./fppylec pull origin master
 
   # Run simulation <-- CHANGE NAME
   $SSH docker run -t -d --rm --name $1 --mount type=bind,source=/home/jon/fppylec,target=/usr/src/app python_box_jon $1 $2 $EMAIL
