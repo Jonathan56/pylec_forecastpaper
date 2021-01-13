@@ -2,12 +2,10 @@ from datetime import datetime, timedelta
 import pandas
 import numpy as np
 import warnings
+import logging
+import os
 
-from pyts.approximation import DiscreteFourierTransform  # ARIMA
-#from statsmodels.tsa.arima_model import ARIMA
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
-# from statsmodels.tsa.stattools import adfuller
-from pmdarima import auto_arima, ARIMA  # ARIMA
 import fbprophet
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.preprocessing import OneHotEncoder
@@ -19,6 +17,10 @@ from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import GradientBoostingRegressor
 import keras
 import tensorflow as tf
+
+# https://machinelearningmastery.com/how-to-fix-futurewarning-messages-in-scikit-learn/ ignore all future warnings
+from warnings import simplefilter
+simplefilter(action='ignore', category=FutureWarning)
 
 def perfect(training, horizon):
     return 'Not implemented'
@@ -112,7 +114,9 @@ def prophet(training, horizon, exog=False):
         model.add_regressor('weekday', mode='additive')
 
     # Fit model
-    model.fit(df)
+    logging.getLogger('fbprophet').setLevel(logging.WARNING)
+    with suppress_stdout_stderr():
+        model.fit(df)
 
     # Predict
     future = model.make_future_dataframe(
@@ -285,3 +289,35 @@ def keras_models(training, horizon, model=None):
     ix = pandas.date_range(start=f_start, end=f_end, freq='15T')
     r = pandas.DataFrame(index=ix, data={'yhat': f[0]})
     return r.loc[f_start:f_end, 'yhat']
+
+# from https://stackoverflow.com/questions/11130156/suppress-stdout-stderr-print-from-python-functions
+class suppress_stdout_stderr(object):
+    '''
+    A context manager for doing a "deep suppression" of stdout and stderr in
+    Python, i.e. will suppress all print, even if the print originates in a
+    compiled C/Fortran sub-function.
+       This will not suppress raised exceptions, since exceptions are printed
+    to stderr just before a script exits, and after the context manager has
+    exited (at least, I think that is why it lets exceptions through).
+
+    '''
+    def __init__(self):
+        # Open a pair of null files
+        self.null_fds = [os.open(os.devnull, os.O_RDWR) for x in range(2)]
+        # Save the actual stdout (1) and stderr (2) file descriptors.
+        self.save_fds = (os.dup(1), os.dup(2))
+
+    def __enter__(self):
+        # Assign the null pointers to stdout and stderr.
+        os.dup2(self.null_fds[0], 1)
+        os.dup2(self.null_fds[1], 2)
+
+    def __exit__(self, *_):
+        # Re-assign the real stdout/stderr back to (1) and (2)
+        os.dup2(self.save_fds[0], 1)
+        os.dup2(self.save_fds[1], 2)
+        # Close the null files
+        os.close(self.null_fds[0])
+        os.close(self.null_fds[1])
+        os.close(self.save_fds[0])
+        os.close(self.save_fds[1])
